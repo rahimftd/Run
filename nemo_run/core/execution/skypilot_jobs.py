@@ -127,11 +127,10 @@ class SkypilotJobsExecutor(Executor):
                 "`cloud` is deprecated and will be removed in a future version. Use `infra` instead."
             )
 
-    # TODO: Update this once we know the app id format
     @classmethod
     def parse_app(cls: Type["SkypilotJobsExecutor"], app_id: str) -> tuple[str, str, int]:
         app = app_id.split("___")
-        _, cluster, task, job_id = app[0], app[1], app[2], app[3]
+        cluster, task, job_id = app[0], app[1], app[2]
         assert cluster and task and job_id, f"Invalid app id for Skypilot: {app_id}"
         return cluster, task, int(job_id)
 
@@ -213,7 +212,6 @@ class SkypilotJobsExecutor(Executor):
         import sky.exceptions as sky_exceptions
         import sky.jobs.client.sdk as sky_jobs
 
-        # TODO: Update after fixing parse_app
         _, _, job_id = cls.parse_app(app_id)
 
         try:
@@ -233,7 +231,6 @@ class SkypilotJobsExecutor(Executor):
     def cancel(cls: Type["SkypilotJobsExecutor"], app_id: str):
         from sky.jobs.client.sdk import cancel
 
-        # TODO: Fix based on updated app id
         _, _, job_id = cls.parse_app(app_id=app_id)
         job_details = cls.status(app_id=app_id)
         if not job_details:
@@ -418,12 +415,11 @@ cd /nemo_run/code
         return job_id, handle
 
     def cleanup(self, handle: str):
-        import sky.core as sky_core
+        import sky.jobs.client.sdk as sky_jobs
 
-        # TODO: Update handle logic if needed
         _, _, path_str = handle.partition("://")
         path = path_str.split("/")
         app_id = path[1]
 
-        cluster, _, job_id = self.parse_app(app_id)
-        sky_core.download_logs(cluster, job_ids=[job_id])
+        _, _, job_id = self.parse_app(app_id)
+        sky_jobs.download_logs(job_ids=job_id)

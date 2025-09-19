@@ -106,10 +106,10 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
         assert job_id and handle, (
             f"Failed scheduling run on Skypilot. Job id: {job_id}, Handle: {handle}"
         )
-        app_id = f"{executor.experiment_id}___{handle.get_cluster_name()}___{task.name}___{job_id}"
+        app_id = f"{handle.get_cluster_name()}___{task.name}___{job_id}"
         print(f"App Id: {app_id}")
         print("........................................................................................")
-        _, task_details = SkypilotJobsExecutor.status(app_id=app_id)
+        task_details = SkypilotJobsExecutor.status(app_id=app_id)
         if task_details:
             _save_job_dir(
                 app_id,
