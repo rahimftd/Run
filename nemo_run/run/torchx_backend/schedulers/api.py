@@ -29,7 +29,7 @@ from nemo_run.core.execution.skypilot_jobs import SkypilotJobsExecutor
 EXECUTOR_MAPPING: dict[Type[Executor], str] = {
     SlurmExecutor: "slurm_tunnel",
     SkypilotExecutor: "skypilot",
-    SkypilotJobsExecutor: "skypilot_jobs",
+    SkypilotJobsExecutor: "skypilot",
     LocalExecutor: "local_persistent",
     DockerExecutor: "docker_persistent",
     DGXCloudExecutor: "dgx_cloud",
