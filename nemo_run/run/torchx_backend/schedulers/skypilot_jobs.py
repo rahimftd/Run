@@ -110,6 +110,7 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
         print(f"App Id: {app_id}")
         print("........................................................................................")
         task_details = SkypilotJobsExecutor.status(app_id=app_id)
+        print(f"Task Details: {task_details}")
         if task_details:
             _save_job_dir(
                 app_id,
