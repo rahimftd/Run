@@ -241,14 +241,13 @@ class SkypilotJobsExecutor(Executor):
     @classmethod
     def logs(cls: Type["SkypilotJobsExecutor"], app_id: str, fallback_path: Optional[str]):
         import sky.jobs.client.sdk as sky_jobs
-        from sky.skylet import job_lib
 
         _, _, job_id = cls.parse_app(app_id)
         job_details = cls.status(app_id)
 
         is_terminal = False
-        if job_details and job_lib.JobStatus.is_terminal(job_details["status"]):
-            is_terminal = True
+        if job_details and job_details["status"]:
+            is_terminal = job_details["status"].is_terminal()
         elif not job_details:
             is_terminal = True
         if fallback_path and is_terminal:
