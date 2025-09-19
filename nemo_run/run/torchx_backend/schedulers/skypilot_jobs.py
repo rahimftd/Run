@@ -115,7 +115,6 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
             _save_job_dir(
                 app_id,
                 job_status=task_details["status"].value,
-                log_dir=task_details["log_path"],
             )
 
         return app_id
@@ -147,7 +146,6 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
         pass
 
     def describe(self, app_id: str) -> Optional[DescribeAppResponse]:
-        from sky.skylet import job_lib
         from sky.jobs.state import ManagedJobStatus
 
         _, task_name, _ = SkypilotJobsExecutor.parse_app(app_id=app_id)
@@ -180,7 +178,6 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
                     roles_statuses=roles_statuses,
                     state=app_state,
                     msg="",
-                    ui_url=past_apps[app_id]["log_dir"] if "log_dir" in past_apps[app_id] else None,
                 )
             else:
                 return None
@@ -189,7 +186,6 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
             _save_job_dir(
                 app_id,
                 job_status=task_details["status"].value,
-                log_dir=task_details["log_path"],
             )
             roles_statuses[0].replicas[0].state = app_state
             return DescribeAppResponse(
@@ -198,7 +194,6 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
                 roles_statuses=roles_statuses,
                 state=app_state,
                 msg="",
-                ui_url=task_details["log_path"],
             )
 
     def _cancel_existing(self, app_id: str) -> None:
@@ -213,7 +208,7 @@ def create_scheduler(session_name: str, **kwargs: Any) -> SkypilotJobsScheduler:
     )
 
 
-def _save_job_dir(app_id: str, job_status: str, log_dir: str) -> None:
+def _save_job_dir(app_id: str, job_status: str) -> None:
     original_apps = {}
     if not os.path.isfile(SKYPILOT_JOB_DIRS):
         os.makedirs(os.path.dirname(SKYPILOT_JOB_DIRS), exist_ok=True)
@@ -232,7 +227,6 @@ def _save_job_dir(app_id: str, job_status: str, log_dir: str) -> None:
 
             app = {
                 "job_status": job_status,
-                "log_dir": log_dir,
             }
             original_apps[app_id] = app
 
