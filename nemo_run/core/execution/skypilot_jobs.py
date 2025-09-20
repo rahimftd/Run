@@ -401,12 +401,14 @@ cd /nemo_run/code
         task: "skyt.Task",
         num_nodes: Optional[int] = None,
     ) -> tuple[Optional[int], Optional["backends.ResourceHandle"]]:
-        from sky import stream_and_get
+        from sky import stream_and_get, skypilot_config
         from sky.jobs.client.sdk import launch
 
         if num_nodes:
             task.num_nodes = num_nodes
-
+        print(".......................................Skypilot Config.........................................")
+        print(f"skypilot_config: {skypilot_config.to_dict()}")
+        print("........................................................................................")
         job_id, handle = stream_and_get(
             launch(task)
         )
