@@ -100,17 +100,11 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
         executor = req.executor
         executor.package(executor.packager, job_name=executor.job_name)
         job_id, handle = executor.launch(task)
-        print(".............................Starting Skypilot Managed Job..............................")
-        print(f"Job Id: {job_id}")
-        print(f"Handle: {handle}")
         assert job_id and handle, (
             f"Failed scheduling run on Skypilot. Job id: {job_id}, Handle: {handle}"
         )
         app_id = f"{handle.get_cluster_name()}___{task.name}___{job_id}"
-        print(f"App Id: {app_id}")
-        print("........................................................................................")
         task_details = SkypilotJobsExecutor.status(app_id=app_id)
-        print(f"Task Details: {task_details}")
         if task_details:
             _save_job_dir(
                 app_id,

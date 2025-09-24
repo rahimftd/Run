@@ -406,9 +406,7 @@ cd /nemo_run/code
 
         if num_nodes:
             task.num_nodes = num_nodes
-        print(".......................................Skypilot Config.........................................")
-        print(f"skypilot_config: {skypilot_config.to_dict()}")
-        print("........................................................................................")
+
         job_id, handle = stream_and_get(
             launch(task)
         )
