@@ -421,4 +421,4 @@ cd /nemo_run/code
         app_id = path[1]
 
         _, _, job_id = self.parse_app(app_id)
-        sky_jobs.download_logs(job_ids=job_id)
+        sky_jobs.download_logs(job_id=job_id)
