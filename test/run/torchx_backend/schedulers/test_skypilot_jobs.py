@@ -89,7 +89,9 @@ def test_cancel_existing(skypilot_jobs_scheduler):
 def test_describe_no_status(skypilot_jobs_scheduler):
     with (
         mock.patch.object(SkypilotJobsExecutor, "status") as mock_status,
-        mock.patch("nemo_run.run.torchx_backend.schedulers.skypilot_jobs._get_job_dirs") as mock_get_job_dirs,
+        mock.patch(
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs._get_job_dirs"
+        ) as mock_get_job_dirs,
     ):
         mock_status.return_value = None
         mock_get_job_dirs.return_value = {}
@@ -101,14 +103,13 @@ def test_describe_no_status(skypilot_jobs_scheduler):
 def test_describe_with_status(skypilot_jobs_scheduler):
     from sky.jobs.state import ManagedJobStatus
 
-    task_details = {
-        "status": ManagedJobStatus.RUNNING,
-        "job_id": 123
-    }
+    task_details = {"status": ManagedJobStatus.RUNNING, "job_id": 123}
 
     with (
         mock.patch.object(SkypilotJobsExecutor, "status") as mock_status,
-        mock.patch("nemo_run.run.torchx_backend.schedulers.skypilot_jobs._save_job_dir") as mock_save,
+        mock.patch(
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs._save_job_dir"
+        ) as mock_save,
     ):
         mock_status.return_value = task_details
 
@@ -122,15 +123,13 @@ def test_describe_with_status(skypilot_jobs_scheduler):
 
 
 def test_describe_with_past_jobs(skypilot_jobs_scheduler):
-    past_apps = {
-        "test_cluster___test_role___123": {
-            "job_status": "SUCCEEDED"
-        }
-    }
+    past_apps = {"test_cluster___test_role___123": {"job_status": "SUCCEEDED"}}
 
     with (
         mock.patch.object(SkypilotJobsExecutor, "status") as mock_status,
-        mock.patch("nemo_run.run.torchx_backend.schedulers.skypilot_jobs._get_job_dirs") as mock_get_job_dirs,
+        mock.patch(
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs._get_job_dirs"
+        ) as mock_get_job_dirs,
     ):
         mock_status.return_value = None
         mock_get_job_dirs.return_value = past_apps
@@ -141,4 +140,5 @@ def test_describe_with_past_jobs(skypilot_jobs_scheduler):
         assert result.app_id == "test_cluster___test_role___123"
         # The state should be mapped from SUCCEEDED status
         from torchx.specs import AppState
+
         assert result.state == AppState.SUCCEEDED

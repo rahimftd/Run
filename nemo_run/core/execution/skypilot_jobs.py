@@ -23,7 +23,7 @@ try:
 
     _SKYPILOT_AVAILABLE = True
 except ImportError:
-    ...
+    pass
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +110,7 @@ class SkypilotJobsExecutor(Executor):
     infra: Optional[str] = None
     network_tier: Optional[str] = None
     retry_until_up: bool = False
-    packager: Packager = field(default_factory=lambda: GitArchivePackager())  # type: ignore  # noqa: F821
+    packager: Packager = field(default_factory=GitArchivePackager)  # type: ignore  # noqa: F821
 
     def __post_init__(self):
         assert _SKYPILOT_AVAILABLE, (
@@ -204,9 +204,7 @@ class SkypilotJobsExecutor(Executor):
         return resources  # type: ignore
 
     @classmethod
-    def status(
-        cls: Type["SkypilotJobsExecutor"], app_id: str
-    ) -> Optional[dict]:
+    def status(cls: Type["SkypilotJobsExecutor"], app_id: str) -> Optional[dict]:
         from sky import stream_and_get
         import sky.exceptions as sky_exceptions
         import sky.jobs.client.sdk as sky_jobs
@@ -215,11 +213,7 @@ class SkypilotJobsExecutor(Executor):
 
         try:
             job_details: List[Dict[str, Any]] = stream_and_get(
-                sky_jobs.queue(
-                    refresh=True,
-                    all_users=True,
-                    job_ids=[job_id]
-                ),
+                sky_jobs.queue(refresh=True, all_users=True, job_ids=[job_id]),
             )[0]
         except sky_exceptions.ClusterNotUpError:
             return None
@@ -400,15 +394,13 @@ cd /nemo_run/code
         task: "skyt.Task",
         num_nodes: Optional[int] = None,
     ) -> tuple[Optional[int], Optional["backends.ResourceHandle"]]:
-        from sky import stream_and_get, skypilot_config
+        from sky import stream_and_get
         from sky.jobs.client.sdk import launch
 
         if num_nodes:
             task.num_nodes = num_nodes
 
-        job_id, handle = stream_and_get(
-            launch(task)
-        )
+        job_id, handle = stream_and_get(launch(task))
 
         return job_id, handle
 

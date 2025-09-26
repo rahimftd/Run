@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import shutil
 import tempfile
@@ -57,9 +56,8 @@ try:
         ManagedJobStatus.FAILED_CONTROLLER: AppState.FAILED,
     }
 except ImportError:
-    ...
+    pass
 
-log: logging.Logger = logging.getLogger(__name__)
 SKYPILOT_JOB_DIRS = os.path.join(get_nemorun_home(), ".skypilot_jobs.json")
 
 
@@ -187,7 +185,8 @@ class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type:
     def _cancel_existing(self, app_id: str) -> None:
         SkypilotJobsExecutor.cancel(app_id=app_id)
 
-    def list(self) -> list[ListAppResponse]: ...
+    def list(self) -> list[ListAppResponse]:
+        pass
 
 
 def create_scheduler(session_name: str, **kwargs: Any) -> SkypilotJobsScheduler:

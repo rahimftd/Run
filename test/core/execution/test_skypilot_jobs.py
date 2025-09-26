@@ -371,7 +371,9 @@ class TestSkypilotJobsExecutor:
             executor.job_dir = tmp_dir
             executor.file_mounts = {"test_file": "/path/to/test_file"}
 
-            result = executor.to_task("test_task", ["python", "train.py"], {"TEST_VAR": "test_value"})
+            result = executor.to_task(
+                "test_task", ["python", "train.py"], {"TEST_VAR": "test_value"}
+            )
 
             mock_task.assert_called_once()
             assert mock_task.call_args[1]["name"] == "test_task"
