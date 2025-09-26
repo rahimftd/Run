@@ -23,6 +23,7 @@ try:
 
     _SKYPILOT_AVAILABLE = True
 except ImportError:
+    # suppress import error so we don't crash if skypilot is not installed.
     pass
 
 logger = logging.getLogger(__name__)

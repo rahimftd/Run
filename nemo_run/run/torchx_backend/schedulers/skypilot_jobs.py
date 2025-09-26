@@ -56,6 +56,7 @@ try:
         ManagedJobStatus.FAILED_CONTROLLER: AppState.FAILED,
     }
 except ImportError:
+    # suppress import error so we don't crash if skypilot is not installed.
     pass
 
 SKYPILOT_JOB_DIRS = os.path.join(get_nemorun_home(), ".skypilot_jobs.json")
