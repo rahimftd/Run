@@ -100,7 +100,7 @@ class SkypilotJobsExecutor(Executor):
     disk_tier: Optional[Union[str, list[str]]] = None
     ports: Optional[tuple[str]] = None
     file_mounts: Optional[dict[str, str]] = None
-    storage_mounts: Optional[dict[str, dict[str, Any]]] = None  # Can be str or dict configs
+    storage_mounts: Optional[dict[str, dict[str, Any]]] = None
     cluster_name: Optional[str] = None
     setup: Optional[str] = None
     autodown: bool = False
@@ -176,7 +176,6 @@ class SkypilotJobsExecutor(Executor):
                     else:
                         resources_cfg[attr] = value
 
-        # any_of = False
         attrs = [
             "cloud",
             "region",

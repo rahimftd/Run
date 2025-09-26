@@ -1,8 +1,3 @@
-"""
-This file contains the Skypilot Job scheduler which can be used to run TorchX
-components using Skypilot Managed Jobs.
-"""
-
 import json
 import logging
 import os
@@ -76,7 +71,6 @@ class SkypilotJobsRequest:
 
 class SkypilotJobsScheduler(SchedulerMixin, Scheduler[dict[str, str]]):  # type: ignore
     def __init__(self, session_name: str) -> None:
-        # NOTE: make sure any new init options are supported in create_scheduler(...)
         super().__init__("skypilot_jobs", session_name)
         assert _SKYPILOT_AVAILABLE, (
             'Skypilot is not installed. Please install it using `pip install "nemo_run[skypilot]"`'
