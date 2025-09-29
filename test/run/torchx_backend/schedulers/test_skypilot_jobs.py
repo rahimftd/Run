@@ -1,4 +1,7 @@
+import json
+import os
 import tempfile
+from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -8,6 +11,8 @@ from torchx.specs import AppDef, Role
 from nemo_run.core.execution.skypilot_jobs import SkypilotJobsExecutor
 from nemo_run.run.torchx_backend.schedulers.skypilot_jobs import (
     SkypilotJobsScheduler,
+    _get_job_dirs,
+    _save_job_dir,
     create_scheduler,
 )
 
@@ -142,3 +147,88 @@ def test_describe_with_past_jobs(skypilot_jobs_scheduler):
         from torchx.specs import AppState
 
         assert result.state == AppState.SUCCEEDED
+
+
+def test_save_job_dir_new_file():
+    """Test _save_job_dir when the job file doesn't exist."""
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as f:
+        temp_path = f.name
+    os.unlink(temp_path)  # Remove file to test creation
+
+    try:
+        with mock.patch(
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS",
+            temp_path
+        ):
+            _save_job_dir("test_app_id", "RUNNING")
+
+            # Verify the file was created and contains expected data
+            assert os.path.exists(temp_path)
+            with open(temp_path, "r") as f:
+                data = json.load(f)
+
+            assert "test_app_id" in data
+            assert data["test_app_id"]["job_status"] == "RUNNING"
+    finally:
+        if os.path.exists(temp_path):
+            os.unlink(temp_path)
+
+
+def test_save_job_dir_existing_file():
+    """Test _save_job_dir when the job file already exists with data."""
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as f:
+        temp_path = f.name
+        json.dump({"existing_app": {"job_status": "SUCCEEDED"}}, f)
+
+    try:
+        with mock.patch(
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS",
+            temp_path
+        ):
+            _save_job_dir("new_app_id", "PENDING")
+
+            # Verify both old and new data exist
+            with open(temp_path, "r") as f:
+                data = json.load(f)
+
+            assert "existing_app" in data
+            assert data["existing_app"]["job_status"] == "SUCCEEDED"
+            assert "new_app_id" in data
+            assert data["new_app_id"]["job_status"] == "PENDING"
+    finally:
+        if os.path.exists(temp_path):
+            os.unlink(temp_path)
+
+
+def test_get_job_dirs_existing_file():
+    """Test _get_job_dirs with an existing file containing data."""
+    test_data = {
+        "app1": {"job_status": "RUNNING"},
+        "app2": {"job_status": "SUCCEEDED"},
+    }
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as f:
+        temp_path = f.name
+        json.dump(test_data, f)
+
+    try:
+        with mock.patch(
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS",
+            temp_path
+        ):
+            result = _get_job_dirs()
+            assert result == test_data
+    finally:
+        if os.path.exists(temp_path):
+            os.unlink(temp_path)
+
+
+def test_get_job_dirs_file_not_found():
+    """Test _get_job_dirs when the file doesn't exist."""
+    non_existent_path = "/tmp/definitely_does_not_exist_12345.json"
+
+    with mock.patch(
+        "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS",
+        non_existent_path
+    ):
+        result = _get_job_dirs()
+        assert result == {}
