@@ -1,7 +1,6 @@
 import json
 import os
 import tempfile
-from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -157,8 +156,7 @@ def test_save_job_dir_new_file():
 
     try:
         with mock.patch(
-            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS",
-            temp_path
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS", temp_path
         ):
             _save_job_dir("test_app_id", "RUNNING")
 
@@ -182,8 +180,7 @@ def test_save_job_dir_existing_file():
 
     try:
         with mock.patch(
-            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS",
-            temp_path
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS", temp_path
         ):
             _save_job_dir("new_app_id", "PENDING")
 
@@ -212,8 +209,7 @@ def test_get_job_dirs_existing_file():
 
     try:
         with mock.patch(
-            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS",
-            temp_path
+            "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS", temp_path
         ):
             result = _get_job_dirs()
             assert result == test_data
@@ -227,8 +223,7 @@ def test_get_job_dirs_file_not_found():
     non_existent_path = "/tmp/definitely_does_not_exist_12345.json"
 
     with mock.patch(
-        "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS",
-        non_existent_path
+        "nemo_run.run.torchx_backend.schedulers.skypilot_jobs.SKYPILOT_JOB_DIRS", non_existent_path
     ):
         result = _get_job_dirs()
         assert result == {}
